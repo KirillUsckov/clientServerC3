@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Сдача недвижимости</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #f9f9f9;
+            padding: 40px;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        button {
+            padding: 10px 20px;
+            margin-bottom: 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        button:hover {
+            opacity: 0.9;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            background: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        th {
+            background-color: #f0f0f0;
+            font-weight: bold;
+        }
+        .delete-button {
+            visibility: hidden;
+            color: red;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        tr:hover .delete-button {
+            visibility: visible;
+        }
+        img.thumbnail {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+<h2>Список недвижимости</h2>
+<button onclick="location.href='create.html'">Добавить</button>
+
+<table id="propertyTable">
+    <thead>
+    <tr>
+        <th>Фото</th>
+        <th>Название</th>
+        <th>Цена</th>
+        <th>Тип</th>
+        <th>Адрес</th>
+        <th>Период</th>
+        <th style="width: 80px;"></th>
+    </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<script>
+    const apiUrl = '/api/v1/property';
+
+    function fetchData() {
+        fetch(apiUrl)
+            .then(res => res.json())
+            .then(data => {
+                const tbody = document.querySelector('#propertyTable tbody');
+                tbody.innerHTML = '';
+                data.forEach(item => {
+                    const imgSrc = item.photos && item.photos.length > 0
+                        ? `/api/v1/photo/${item.photos[0].id}`
+                        : 'https://sbdsefprod.vtexassets.com/arquivos/ids/173962-1200-auto?v=637749743727030000&width=1200&height=auto&aspect=true';
+
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+            <td><img class="thumbnail" src="${imgSrc}" alt="Фото"></td>
+            <td>${item.name}</td>
+            <td>${item.price}</td>
+            <td>${item.type}</td>
+            <td>${item.address}</td>
+            <td>${item.period}</td>
+            <td><span class="delete-button" onclick="deleteItem(${item.id})">Удалить</span></td>
+          `;
+                    tbody.appendChild(row);
+                });
+            });
+    }
+
+    function deleteItem(id) {
+        if (confirm('Удаление без возможности восстановления. Продолжить?')) {
+            fetch(apiUrl + '?id=' + id, { method: 'DELETE' })
+                .then(() => fetchData());
+        }
+    }
+
+    fetchData();
+</script>
+</body>
+</html>
