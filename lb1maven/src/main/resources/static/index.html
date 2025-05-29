@@ -1,0 +1,124 @@
+<!-- main.html -->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Сдача недвижимости</title>
+    <style>
+        table { border-collapse: collapse; width: 100%; margin-top: 10px; table-layout: fixed; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        th { background-color: #f0f0f0; }
+        .delete-button { visibility: hidden; color: red; cursor: pointer; }
+        tr:hover .delete-button { visibility: visible; }
+        #modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0,0,0,0.5); justify-content: center; align-items: center; }
+        #modalContent { background: white; padding: 20px; border-radius: 5px; }
+    </style>
+</head>
+<body>
+<h2>Список недвижимости</h2>
+<button onclick="openModal()">Добавить</button>
+
+<table id="propertyTable">
+    <thead>
+    <tr>
+        <th>Название</th>
+        <th>Цена</th>
+        <th>Тип</th>
+        <th>Адрес</th>
+        <th>Период</th>
+        <th style="width: 80px;"></th>
+    </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<div id="modal">
+    <div id="modalContent">
+        <h3>Новое объявление</h3>
+        <form id="propertyForm">
+            <label>Название: <input name="name" required></label><br>
+            <label>Цена: <input name="price" type="number" required></label><br>
+            <label>Тип:
+                <select name="type">
+                    <option value="APARTMENT">Квартира</option>
+                    <option value="HOUSE">Дом</option>
+                    <option value="OFFICE">Офис</option>
+                </select>
+            </label><br>
+            <label>Адрес: <input name="address" required></label><br>
+            <label>Период:
+                <select name="period">
+                    <option value="DAILY">Посуточно</option>
+                    <option value="LONG_TERM">Долгосрочно</option>
+                </select>
+            </label><br><br>
+            <button type="submit">Сохранить</button>
+            <button type="button" onclick="closeModal()">Отмена</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    const apiUrl = '/api/v1/property';
+
+    function fetchData() {
+        fetch(apiUrl)
+            .then(res => res.json())
+            .then(data => {
+                const tbody = document.querySelector('#propertyTable tbody');
+                tbody.innerHTML = '';
+                data.forEach(item => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+              <td>${item.name}</td>
+              <td>${item.price}</td>
+              <td>${item.type}</td>
+              <td>${item.address}</td>
+              <td>${item.period}</td>
+              <td><span class="delete-button" onclick="deleteItem(${item.id})">Удалить</span></td>
+            `;
+                    tbody.appendChild(row);
+                });
+            });
+    }
+
+    function deleteItem(id) {
+        if (confirm('Удаление без возможности восстановления. Продолжить?')) {
+            fetch(apiUrl + '?id=' + id, { method: 'DELETE' })
+                .then(() => fetchData());
+        }
+    }
+
+    function openModal() {
+        document.getElementById('modal').style.display = 'flex';
+    }
+
+    function closeModal() {
+        document.getElementById('modal').style.display = 'none';
+        document.getElementById('propertyForm').reset();
+    }
+
+    document.getElementById('propertyForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const data = Object.fromEntries(new FormData(this));
+        fetch(apiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        })
+            .then(res => res.json())
+            .then(res => {
+                if (res.success) {
+                    closeModal();
+                    fetchData();
+                } else {
+                    alert('Ошибка: ' + (res.error || 'Неизвестная ошибка'));
+                }
+            });
+    });
+
+    fetchData();
+</script>
+</body>
+</html>
