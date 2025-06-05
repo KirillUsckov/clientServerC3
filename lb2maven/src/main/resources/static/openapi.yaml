@@ -1,0 +1,146 @@
+openapi: 3.0.3
+info:
+  title: Property Rental API
+  version: 1.0.0
+paths:
+  /api/v1/property:
+    get:
+      summary: Получить список всех объектов недвижимости
+      operationId: getAllProperties
+      responses:
+        '200':
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PropertyResponse'
+
+    post:
+      summary: Создать новое объявление
+      operationId: createProperty
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                data:
+                  $ref: '#/components/schemas/PropertyRequest'
+                photo:
+                  type: string
+                  format: binary
+      responses:
+        '201':
+          description: Успешное создание
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PropertyResponse'
+
+  /api/v1/property/{id}:
+    delete:
+      summary: Удалить объект по id
+      operationId: deleteProperty
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Успешное удаление
+        '404':
+          description: Объект не найден
+
+  /api/v1/property/photo/{id}:
+    get:
+      summary: Получить фотографию объекта недвижимости по ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID фотографии
+      responses:
+        '200':
+          description: Фотография найдена
+          content:
+            image/jpeg:
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: Фото не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PhotoResponse'
+
+
+
+components:
+  schemas:
+    PropertyRequest:
+      type: object
+      required:
+        - name
+        - price
+        - type
+        - address
+        - description
+        - period
+      properties:
+        name:
+          type: string
+        price:
+          type: number
+          format: int64
+        type:
+          type: string
+          enum: [APARTMENT, HOUSE, OFFICE]
+        address:
+          type: string
+        description:
+          type: string
+        period:
+          type: string
+          enum: [DAILY, LONG_TERM]
+
+    PropertyResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        price:
+          type: number
+          format: int64
+        type:
+          type: string
+        address:
+          type: string
+        description:
+          type: string
+        period:
+          type: string
+        photoUrls:
+          type: array
+          items:
+            type: string
+
+    PhotoResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        details:
+          type: string
+        photo:
+          type: string
+          format: byte
