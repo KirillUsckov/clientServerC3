@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Сдача недвижимости</title>
+    <link rel="stylesheet" href="./css/main-page-styles.css">
+</head>
+<body>
+<h2>Список недвижимости</h2>
+<button onclick="location.href='create.html'">Добавить</button>
+
+<table id="propertyTable">
+    <thead>
+    <tr>
+        <th>Фото</th>
+        <th>Название</th>
+        <th>Цена</th>
+        <th>Тип</th>
+        <th>Адрес</th>
+        <th>Период</th>
+        <th style="width: 80px;"></th>
+    </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<script>
+    const apiUrl = '/api/v1/property';
+
+    function fetchData() {
+        fetch(apiUrl)
+            .then(res => res.json())
+            .then(data => {
+                const tbody = document.querySelector('#propertyTable tbody');
+                tbody.innerHTML = '';
+                data.properties.forEach(item => {
+                    const photoUrl = (item.photoUrls && item.photoUrls.length > 0)
+                        ? item.photoUrls[0]
+                        : 'https://via.placeholder.com/100?text=No+Photo';
+
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td><img class="thumbnail" src="${photoUrl}" alt="Фото" style="max-height: 100px;"></td>
+                        <td>${item.name}</td>
+                        <td>${item.price}</td>
+                        <td>${item.type}</td>
+                        <td>${item.address}</td>
+                        <td>${item.period}</td>
+                        <td><span class="delete-button" onclick="deleteItem(${item.id})">Удалить</span></td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            })
+            .catch(err => {
+                alert("Ошибка при загрузке данных");
+                console.error(err);
+            });
+    }
+
+    function deleteItem(id) {
+        if (confirm('Удаление без возможности восстановления. Продолжить?')) {
+            fetch(`${apiUrl}/${id}`, { method: 'DELETE' })
+                .then(res => {
+                    if (res.ok) {
+                        fetchData();
+                    } else {
+                        alert("Не удалось удалить элемент");
+                    }
+                });
+        }
+    }
+
+    fetchData();
+</script>
+
+</body>
+</html>

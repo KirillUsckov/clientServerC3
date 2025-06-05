@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Новое объявление</title>
+    <link rel="stylesheet" href="./css/create-page-styles.css">
+</head>
+<body>
+<h2>Создание нового объявления</h2>
+<form id="createPropertyForm">
+    <label>Название:
+        <input name="name" required>
+    </label>
+
+    <label>Цена:
+        <input name="price" type="number" required>
+    </label>
+
+    <label>Тип:
+        <select name="type">
+            <option value="APARTMENT">Квартира</option>
+            <option value="HOUSE">Дом</option>
+            <option value="OFFICE">Офис</option>
+        </select>
+    </label>
+
+    <label>Адрес:
+        <input name="address" required>
+    </label>
+
+    <label>Период:
+        <select name="period">
+            <option value="DAILY">Посуточно</option>
+            <option value="LONG_TERM">Долгосрочно</option>
+        </select>
+    </label>
+
+    <label>Описание:
+        <textarea name="description" rows="4" placeholder="Введите описание..." required></textarea>
+    </label>
+
+    <label>Фото (до 5):
+        <input type="file" name="photos" accept="image/*" multiple>
+    </label>
+
+    <button type="submit">Создать</button>
+    <button type="button" onclick="history.back()">Отмена</button>
+</form>
+
+<script>
+    document.getElementById('createPropertyForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const form = e.target;
+        const formData = new FormData(form);
+
+        const files = formData.getAll('photos');
+        if (files.length > 5) {
+            alert("Можно загрузить максимум 5 фото.");
+            return;
+        }
+
+        fetch('/api/v1/property', {
+            method: 'POST',
+            body: formData
+        })
+            .then(res => res.json())
+            .then(res => {
+                if (res.success) {
+                    window.location.href = 'main.html';
+                } else {
+                    alert('Ошибка: ' + (res.error || 'Неизвестная ошибка'));
+                }
+            })
+            .catch(() => alert('Произошла ошибка при отправке данных.'));
+    });
+</script>
+</body>
+</html>
