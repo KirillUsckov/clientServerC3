@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Создание объявления</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <link rel="stylesheet" href="style.css">
+    <script src="js/create-property.js?v=1" defer></script>
+</head>
+<body>
+<h1>Создание объекта недвижимости</h1>
+<form id="createPropertyForm" enctype="multipart/form-data">
+    <label>Название: <input type="text" name="name" required></label><br>
+    <label>Цена: <input type="number" name="price" required></label><br>
+    <label>Тип:
+        <select name="type" required>
+            <option value="APARTMENT">Квартира</option>
+            <option value="HOUSE">Дом</option>
+            <option value="OFFICE">Офис</option>
+        </select>
+    </label><br>
+    <label>Адрес: <input type="text" name="address" required></label><br>
+    <label>Описание: <textarea name="description" required></textarea></label><br>
+    <label>Период:
+        <select name="period" required>
+            <option value="DAILY">Посуточно</option>
+            <option value="LONG_TERM">Долгосрочно</option>
+        </select>
+    </label><br>
+    <label>Фотография: <input type="file" name="photos" accept="image/*"></label><br>
+    <button type="submit">Создать</button>
+</form>
+</body>
+</html>
