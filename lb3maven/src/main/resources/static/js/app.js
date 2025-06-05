@@ -29,11 +29,10 @@ angular.module('propertyApp', [])
             formData.append('data', new Blob([JSON.stringify($scope.form)], { type: 'application/json' }));
 
             const files = document.getElementById('photos').files;
-            if (files.length > 5) return alert("Не больше 5 фото");
+            if (files.length > 1) return alert("Не больше 1 фото");
 
-            for (let i = 0; i < files.length; i++) {
-                formData.append('photo', files[i]);
-            }
+            formData.append('photo', files[0]);
+
 
             $http.post('/api/v1/property', formData, {
                 headers: { 'Content-Type': undefined }
