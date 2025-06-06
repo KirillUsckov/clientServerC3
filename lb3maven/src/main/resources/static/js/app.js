@@ -28,7 +28,7 @@ angular.module('propertyApp', [])
             const formData = new FormData();
             formData.append('data', new Blob([JSON.stringify($scope.form)], { type: 'application/json' }));
 
-            const files = document.getElementById('photos').files;
+            const files = document.getElementById('file-upload').files;
             if (files.length > 1) return alert("Не больше 1 фото");
 
             formData.append('photo', files[0]);
