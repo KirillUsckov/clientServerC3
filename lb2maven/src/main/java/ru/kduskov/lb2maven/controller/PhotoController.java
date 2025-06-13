@@ -41,6 +41,4 @@ public class PhotoController {
         HttpHeaders headers = HttpUtil.buildImageHeaders(photo.getFileName(), photo.getData().length);
         return new ResponseEntity<>(photo.getData(), headers, HttpStatus.OK);
     }
-
-
 }

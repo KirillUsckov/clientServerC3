@@ -35,6 +35,11 @@ public class PropertyService {
         return propertyRepository.findById(id).orElse(null);
     }
 
+    public Property findByIdWithPhoto(Long id) {
+        return propertyRepository.findFirstByIdWithPhotos(id).orElse(null);
+    }
+
+
     public PropertyPhoto findPhotoById(Long id) {
         return photoRepository.findById(id).orElse(null);
     }

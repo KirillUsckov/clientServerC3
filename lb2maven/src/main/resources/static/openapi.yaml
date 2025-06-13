@@ -1,52 +1,70 @@
 openapi: 3.0.3
 info:
-  title: Property Rental API
+  title: Property API
   version: 1.0.0
+  description: API для управления объектами недвижимости
+
 paths:
   /api/v1/property:
     get:
-      summary: Получить список всех объектов недвижимости
-      operationId: getAllProperties
+      summary: Получение списка недвижимости
       responses:
         '200':
-          description: Успешный ответ
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/PropertyResponse'
-
+          description: Список объектов
     post:
-      summary: Создать новое объявление
-      operationId: createProperty
+      summary: Создание нового объявления
       requestBody:
         required: true
         content:
           multipart/form-data:
             schema:
               type: object
+              required:
+                - name
+                - price
+                - type
+                - address
+                - description
+                - period
+                - photo
               properties:
-                data:
-                  $ref: '#/components/schemas/PropertyRequest'
+                name:
+                  type: string
+                  description: Название
+                price:
+                  type: integer
+                  description: Цена
+                type:
+                  type: string
+                  enum: [ APARTMENT, HOUSE, STUDIO ]
+                  description: Тип недвижимости
+                address:
+                  type: string
+                  description: Адрес
+                description:
+                  type: string
+                  description: Описание
+                period:
+                  type: string
+                  enum: [ DAILY, WEEKLY, MONTHLY ]
+                  description: Период аренды
                 photo:
                   type: string
                   format: binary
+                  description: Фото
       responses:
         '201':
-          description: Успешное создание
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PropertyResponse'
+          description: Объект создан
+        '400':
+          description: Неверный формат данных
+
 
   /api/v1/property/{id}:
     delete:
-      summary: Удалить объект по id
-      operationId: deleteProperty
+      summary: Удаление объявления
       parameters:
-        - name: id
-          in: path
+        - in: path
+          name: id
           required: true
           schema:
             type: integer
@@ -58,17 +76,16 @@ paths:
 
   /api/v1/property/photo/{id}:
     get:
-      summary: Получить фотографию объекта недвижимости по ID
+      summary: Получение фотографии по ID
       parameters:
-        - name: id
-          in: path
+        - in: path
+          name: id
           required: true
           schema:
             type: integer
-          description: ID фотографии
       responses:
         '200':
-          description: Фотография найдена
+          description: Фотография
           content:
             image/jpeg:
               schema:
@@ -76,71 +93,61 @@ paths:
                 format: binary
         '404':
           description: Фото не найдено
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PhotoResponse'
-
-
 
 components:
   schemas:
     PropertyRequest:
       type: object
-      required:
-        - name
-        - price
-        - type
-        - address
-        - description
-        - period
       properties:
         name:
           type: string
         price:
-          type: number
-          format: int64
+          type: integer
         type:
           type: string
-          enum: [APARTMENT, HOUSE, OFFICE]
+          enum: [APARTMENT, HOUSE, STUDIO]
         address:
           type: string
         description:
           type: string
         period:
           type: string
-          enum: [DAILY, LONG_TERM]
+          enum: [DAILY, WEEKLY, MONTHLY]
+
+    PropertyData:
+      allOf:
+        - $ref: "#/components/schemas/PropertyRequest"
+        - type: object
+          properties:
+            id:
+              type: integer
+            photoUrls:
+              type: array
+              items:
+                type: string
 
     PropertyResponse:
       type: object
       properties:
-        id:
-          type: integer
-        name:
-          type: string
-        price:
-          type: number
-          format: int64
-        type:
-          type: string
-        address:
-          type: string
-        description:
-          type: string
-        period:
-          type: string
-        photoUrls:
+        success:
+          type: boolean
+        data:
+          $ref: "#/components/schemas/PropertyData"
+
+    PropertyListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        properties:
           type: array
           items:
-            type: string
+            $ref: "#/components/schemas/PropertyData"
 
-    PhotoResponse:
+    BaseResponse:
       type: object
       properties:
         success:
           type: boolean
         details:
           type: string
-        photo:
-          type: string
-          format: byte

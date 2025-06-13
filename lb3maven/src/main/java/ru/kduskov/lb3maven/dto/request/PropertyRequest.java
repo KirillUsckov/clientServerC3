@@ -3,10 +3,12 @@ package ru.kduskov.lb3maven.dto.request;
 
 import jakarta.validation.constraints.*;
 import lombok.Data;
+import lombok.Getter;
 import ru.kduskov.lb3maven.enums.PropertyType;
 import ru.kduskov.lb3maven.enums.RentalPeriod;
 
 @Data
+@Getter
 public class PropertyRequest {
 
     @NotBlank(message = "Название обязательно")

@@ -25,23 +25,17 @@ public class Property implements Serializable {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @NotBlank(message = "Название обязательно")
   private String name;
 
-  @Min(value = 0, message = "Цена не может быть отрицательной")
   private long price;
 
-  @NotNull(message = "Тип обязателен")
   @Enumerated(EnumType.STRING)
   private PropertyType type;
 
-  @NotBlank(message = "Адрес обязателен")
   private String address;
 
-  @NotBlank(message = "Описание обязательно")
   private String description;
 
-  @NotNull(message = "Период аренды обязателен")
   @Enumerated(EnumType.STRING)
   private RentalPeriod period;
 

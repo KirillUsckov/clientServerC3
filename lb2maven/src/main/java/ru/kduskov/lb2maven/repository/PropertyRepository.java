@@ -5,10 +5,14 @@ import org.springframework.stereotype.Repository;
 import ru.kduskov.lb2maven.model.Property;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface PropertyRepository extends JpaRepository<Property, Long> {
 
     @Query("SELECT DISTINCT p FROM Property p LEFT JOIN FETCH p.photos")
     List<Property> findAllWithPhotos();
+
+    @Query("SELECT DISTINCT p FROM Property p LEFT JOIN FETCH p.photos WHERE p.id = :id")
+    Optional<Property> findFirstByIdWithPhotos(Long id);
 }
